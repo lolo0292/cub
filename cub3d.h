@@ -5,6 +5,10 @@
 # include <math.h>
 # include <X11/keysym.h>
 # include "mlx.h"
+# include <sys/time.h>
+# include <unistd.h>
+# include <string.h>
+# include <stdio.h>
 
 # define W 1024
 # define H 640
@@ -43,8 +47,8 @@ typedef struct s_ray {
 	double	delta_y;
 	int		step_x;
 	int		step_y;
-	int		side;     /* 0=x,1=y */
-	double	perp;     /* distance perpendiculaire */
+	int		side;
+	double	perp;
 }	t_ray;
 
 //jeu global
@@ -53,6 +57,7 @@ typedef struct s_game {
 	void	*win;
 	t_img	frame;
 	t_tex	tex[TEX_NB];
+	t_tex	floor_tex;
 	int		**map;
 	int		map_w;
 	int		map_h;
@@ -64,7 +69,9 @@ typedef struct s_game {
 	double	pl_y;
 	uint32_t ceil_col;
 	uint32_t floor_col;
-	int		key[512];
+	int		key[65536];
+	double	mouse_sens;
+	int		mouse_captured;
 }	t_game;
 
 /* mlx_wrap.c */
@@ -95,8 +102,15 @@ int		key_press(int key, t_game *g);
 int		key_release(int key, t_game *g);
 int		close_win(t_game *g);
 void	player_update(t_game *g, double dt);
+int		mouse_press(int button, int x, int y, t_game *g);
+int		mouse_release(int button, int x, int y, t_game *g);
+int		mouse_move(int x, int y, t_game *g);
+void	rotate_player(t_game *g, double a);
+void	center_mouse(t_game *g);
 
 /* main.c */
 int		loop_hook(t_game *g);
 int		setup_demo_world(t_game *g);
+int     load_floor_texture(t_game *g, const char *path);
+
 #endif

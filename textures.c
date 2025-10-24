@@ -74,3 +74,35 @@ int	choose_tex_id(const t_ray *r)
 		return (r->ray_x < 0 ? TEX_WE : TEX_EA);
 	return (r->ray_y < 0 ? TEX_NO : TEX_SO);
 }
+
+static void gen_floor_checker(t_game *g, t_tex *t, int w, int h)
+{
+	int x, y;
+
+	(void)g;
+	t->i.img = mlx_new_image(g->mlx, w, h);
+	t->i.addr = mlx_get_data_addr(t->i.img, &t->i.bpp, &t->i.line_len, &t->i.endian);
+	t->i.w = w;
+	t->i.h = h;
+	y = 0;
+	while (y < h)
+	{
+		x = 0;
+		while (x < w)
+		{
+			if (((x / 8) + (y / 8)) % 2)
+				*(uint32_t *)(t->i.addr + y * t->i.line_len + x * (t->i.bpp / 8)) = 0x3A6B2E;
+			else
+				*(uint32_t *)(t->i.addr + y * t->i.line_len + x * (t->i.bpp / 8)) = 0x2A4D1A;
+			x++;
+		}
+		y++;
+	}
+}
+
+int	load_floor_texture(t_game *g, const char *path)
+{
+	if (!load_one(g, &g->floor_tex, path))
+		gen_floor_checker(g, &g->floor_tex, 64, 64);
+	return (1);
+}
